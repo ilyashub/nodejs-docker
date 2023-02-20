@@ -1,39 +1,35 @@
 pipeline {
   agent any
+  
   stages {
     stage('checkout code') {
       steps {
+          sh "hostname"
+         sh "whoami"
         git(url: 'https://github.com/RShabbir53/nodejs-docker', branch: 'main')
       }
+    }  
+    
+   stage('Build and push Docker image') {
+            steps {
+                script {
+                    def dockerImage = docker.build("ilyashub/nodeserver:1.0")
+                    docker.withRegistry('https://registry.hub.docker.com', 'DockerHub') {
+                    dockerImage.push()
+                }
+            }
     }
-
-    stage('log') {
-      steps {
-        sh 'ls -laR'
-      }
-    }
-
-    stage('build') {
-      steps {
-        sh 'sudo docker build -t rshabbir53/nodeserver:1.0 .'
-      }
-    }
-
-    stage('log in to docker hub') {
-      environment {
-        DOCKERHUB_USERNAME = 'rshabbir53'
-        DOCKERHUB_PASSWORD = '!babji2009@'
-      }
-      steps {
-        sh 'sudo docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD'
-      }
-    }
-
-    stage('push to docker hub') {
-      steps {
-        sh 'sudo docker push rshabbir53/nodeserver:1.0'
-      }
-    }
-
-  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+   }
+  
+}
 }
